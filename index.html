@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>شات جماعي</title>
+  <title>شات</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -11,49 +11,46 @@
       margin: 0;
       padding: 0;
       font-family: 'Cairo', Arial, sans-serif;
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-      direction: rtl;
+      background: #121212;
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    .login-container, .chat-container {
+      width: 100%;
+      max-width: 480px;
+      margin: auto;
     }
     .login-container {
-      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      z-index: 2;
+      height: 100vh;
     }
     .login-form {
-      background: #fff;
-      padding: 2.5rem 2rem;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      background: #1f1f1f;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
       display: flex;
       flex-direction: column;
       gap: 1.2rem;
-      min-width: 320px;
-      width: 90vw;
-      max-width: 400px;
+      width: 100%;
     }
     .login-form h2 {
       margin: 0 0 1rem 0;
-      color: #2575fc;
+      color: #4dabf7;
       text-align: center;
     }
     .login-form input[type="text"] {
       padding: 0.7rem;
-      border: 1px solid #ddd;
+      border: none;
       border-radius: 8px;
       font-size: 1rem;
       outline: none;
-      transition: border 0.2s;
-    }
-    .login-form input[type="text"]:focus {
-      border: 1.5px solid #2575fc;
+      background: #2a2a2a;
+      color: #fff;
     }
     .gender-select {
       display: flex;
@@ -61,221 +58,116 @@
       gap: 2rem;
     }
     .gender-select label {
-      font-size: 1.1rem;
-      color: #333;
+      font-size: 1rem;
+      color: #ccc;
       cursor: pointer;
     }
     .login-form button {
       padding: 0.8rem;
-      background: #2575fc;
+      background: #4dabf7;
       color: #fff;
       border: none;
       border-radius: 8px;
-      font-size: 1.1rem;
+      font-size: 1rem;
       cursor: pointer;
       transition: background 0.2s;
     }
     .login-form button:hover {
-      background: #6a11cb;
+      background: #1a73e8;
     }
     .chat-container {
-      max-width: 480px;
-      width: 98vw;
-      margin: 40px auto;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      display: flex;
+      display: none;
       flex-direction: column;
-      min-height: 70vh;
-      overflow: hidden;
+      height: 100vh;
+      background: #1f1f1f;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
     }
     .chat-header {
-      background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
+      background: #2c2c2c;
       color: #fff;
-      padding: 1rem 1.5rem;
+      padding: 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
     .logout-btn {
-      background: #fff;
-      color: #2575fc;
+      background: #ff4d4f;
+      color: #fff;
       border: none;
       border-radius: 6px;
       padding: 0.4rem 1rem;
-      font-weight: bold;
       cursor: pointer;
-      transition: background 0.2s;
-    }
-    .logout-btn:hover {
-      background: #f0f0f0;
     }
     .messages-list {
       flex: 1;
-      padding: 1.2rem 0.5rem;
+      padding: 1rem;
       overflow-y: auto;
-      background: #f7f9fa;
+      background: #121212;
       display: flex;
       flex-direction: column;
       gap: 0.7rem;
-      min-height: 200px;
-      max-height: 50vh;
     }
-    .empty {
-      color: #aaa;
-      text-align: center;
-      margin-top: 2rem;
+    .message {
+      background: #2a2a2a;
+      border-radius: 10px;
+      padding: 0.6rem 0.9rem;
+      color: #fff;
+      max-width: 80%;
+      word-break: break-word;
+    }
+    .message.own {
+      background: #0d6efd;
+      align-self: flex-end;
+    }
+    .msg-header {
+      font-size: 0.85rem;
+      margin-bottom: 0.2rem;
+      opacity: 0.8;
     }
     .send-form {
       display: flex;
-      gap: 0.5rem;
-      padding: 1rem 0.5rem;
-      background: #f7f9fa;
-      border-top: 1px solid #eee;
+      gap: 0.4rem;
+      padding: 0.8rem;
+      background: #2c2c2c;
+      align-items: center;
     }
     .send-form input[type="text"] {
       flex: 1;
-      padding: 0.7rem;
-      border: 1px solid #ddd;
+      padding: 0.6rem;
+      border: none;
       border-radius: 8px;
-      font-size: 1rem;
+      background: #3a3a3a;
+      color: #fff;
       outline: none;
-      transition: border 0.2s;
-    }
-    .send-form input[type="text"]:focus {
-      border: 1.5px solid #2575fc;
     }
     .send-form button {
-      padding: 0.7rem 1.1rem;
-      background: #2575fc;
+      background: #4dabf7;
       color: #fff;
       border: none;
       border-radius: 8px;
-      font-size: 1rem;
+      padding: 0.6rem 1rem;
       cursor: pointer;
-      transition: background 0.2s;
-      min-width: 70px;
     }
     .send-form button:hover {
-      background: #6a11cb;
+      background: #1a73e8;
     }
-    .send-form .delete-all {
-      background: #ff4d4f;
-      color: #fff;
-      margin-right: 0.5rem;
+    .send-form input[type="file"] {
+      display: none;
     }
-    .send-form .delete-all:hover {
-      background: #d9363e;
-    }
-    .message {
-      background: #f0f4ff;
-      border-radius: 10px;
-      padding: 0.7rem 1rem;
-      box-shadow: 0 2px 8px rgba(80,120,255,0.04);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      position: relative;
-      min-width: 80px;
-      max-width: 95vw;
-      word-break: break-word;
-    }
-    .message.male {
-      border-right: 5px solid #2575fc;
-    }
-    .message.female {
-      border-right: 5px solid #e75480;
-    }
-    .message.own {
-      background: #e6f7ff;
-      align-self: flex-end;
-      border-left: 5px solid #2575fc;
-      border-right: none;
-    }
-    .msg-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.2rem;
-    }
-    .msg-name {
-      font-weight: bold;
-      color: #333;
-    }
-    .msg-gender.male {
-      color: #2575fc;
-    }
-    .msg-gender.female {
-      color: #e75480;
-    }
-    .delete-btn {
-      background: #ff4d4f;
-      color: #fff;
+    .icon-btn {
+      background: transparent;
       border: none;
-      border-radius: 6px;
-      padding: 0.15rem 0.5rem;
-      font-size: 0.85rem;
-      margin-right: 0.3rem;
       cursor: pointer;
-      transition: background 0.2s;
-      min-width: 38px;
-      min-height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .delete-btn:hover {
-      background: #d9363e;
-    }
-    .msg-text {
-      color: #222;
-      font-size: 1.05rem;
-      word-break: break-word;
-    }
-    @media (max-width: 600px) {
-      .login-form {
-        min-width: 90vw;
-        padding: 1.5rem 0.5rem;
-      }
-      .chat-container {
-        max-width: 100vw;
-        min-height: 100vh;
-        margin: 0;
-        border-radius: 0;
-      }
-      .messages-list {
-        max-height: 45vh;
-        padding: 0.7rem 0.2rem;
-      }
-      .send-form {
-        padding: 0.7rem 0.2rem;
-      }
-      .message {
-        padding: 0.5rem 0.5rem;
-        font-size: 0.95rem;
-      }
-      .delete-btn {
-        font-size: 0.8rem;
-        padding: 0.12rem 0.3rem;
-        min-width: 32px;
-        min-height: 24px;
-      }
-      .send-form button {
-        padding: 0.4rem 0.7rem;
-        font-size: 0.92rem;
-        min-width: 54px;
-        border-radius: 6px;
-      }
-      .send-form .delete-all {
-        margin-right: 0.2rem;
-      }
+      font-size: 1.3rem;
+      color: #4dabf7;
     }
   </style>
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 </head>
 <body>
   <div id="login" class="login-container">
@@ -289,35 +181,38 @@
       <button type="submit">دخول</button>
     </form>
   </div>
-  <div id="chat" class="chat-container" style="display:none;">
+
+  <div id="chat" class="chat-container">
     <div class="chat-header">
       <span>غرفة الشات الجماعي</span>
       <button class="logout-btn" id="logoutBtn">خروج</button>
     </div>
     <div class="messages-list" id="messagesList"></div>
     <form class="send-form" id="sendForm">
+      <button type="button" class="icon-btn" id="imgBtn">📷</button>
+      <input type="file" id="imgInput" accept="image/*" />
+      <button type="button" class="icon-btn" id="voiceBtn">🎤</button>
       <input type="text" id="msgInput" placeholder="اكتب رسالتك..." autocomplete="off" />
       <button type="submit">إرسال</button>
-      <button type="button" class="delete-all" id="deleteAllBtn">حذف الكل</button>
     </form>
   </div>
+
   <script>
-    // إعداد Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyA8aaCdSFakGAwkicUOj0aFOHn08PQF1FE",
-      authDomain: "chat-d298c.firebaseapp.com",
-      databaseURL: "https://chat-d298c-default-rtdb.firebaseio.com",
-      projectId: "chat-d298c",
-      storageBucket: "chat-d298c.firebasestorage.app",
-      messagingSenderId: "91246861194",
-      appId: "1:91246861194:web:35a12218aaea24ba16c673",
-      measurementId: "G-5CWHFRZL1Q"
+    // Firebase config الجديد
+    const firebaseConfig = { 
+      apiKey: "AIzaSyD03Kn97hVqwGmizWO3mWdh_fYaRAJ0OdQ",
+      authDomain: "chat1-e8742.firebaseapp.com",
+      databaseURL: "https://chat1-e8742-default-rtdb.firebaseio.com",
+      projectId: "chat1-e8742",
+      storageBucket: "chat1-e8742.appspot.com",
+      messagingSenderId: "857146526059",
+      appId: "1:857146526059:web:1a2b79c8eea8e12c6b242e"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const storage = firebase.storage();
     const messagesRef = db.ref('messages');
 
-    // عناصر DOM
     const loginDiv = document.getElementById('login');
     const chatDiv = document.getElementById('chat');
     const loginForm = document.getElementById('loginForm');
@@ -326,16 +221,19 @@
     const msgInput = document.getElementById('msgInput');
     const messagesList = document.getElementById('messagesList');
     const logoutBtn = document.getElementById('logoutBtn');
-    const deleteAllBtn = document.getElementById('deleteAllBtn');
+    const imgBtn = document.getElementById('imgBtn');
+    const imgInput = document.getElementById('imgInput');
+    const voiceBtn = document.getElementById('voiceBtn');
 
     let currentUser = null;
+    let mediaRecorder;
+    let audioChunks = [];
 
-    // تسجيل الدخول
-    loginForm.onsubmit = function(e) {
+    loginForm.onsubmit = (e) => {
       e.preventDefault();
       const name = nameInput.value.trim();
       const gender = loginForm.gender.value;
-      if (name) {
+      if(name){
         currentUser = { name, gender };
         loginDiv.style.display = 'none';
         chatDiv.style.display = 'flex';
@@ -343,21 +241,18 @@
       }
     };
 
-    // زر الخروج
-    logoutBtn.onclick = function() {
+    logoutBtn.onclick = () => {
       chatDiv.style.display = 'none';
       loginDiv.style.display = 'flex';
-      nameInput.value = '';
-      msgInput.value = '';
       messagesList.innerHTML = '';
+      msgInput.value = '';
       currentUser = null;
     };
 
-    // إرسال رسالة
-    sendForm.onsubmit = function(e) {
+    sendForm.onsubmit = (e) => {
       e.preventDefault();
       const text = msgInput.value.trim();
-      if (text && currentUser) {
+      if(text && currentUser){
         messagesRef.push({
           name: currentUser.name,
           gender: currentUser.gender,
@@ -368,54 +263,74 @@
       }
     };
 
-    // حذف كل الرسائل
-    deleteAllBtn.onclick = function() {
-      if (confirm('هل أنت متأكد من حذف كل الشات؟')) {
-        messagesRef.set({});
+    imgBtn.onclick = () => imgInput.click();
+    imgInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if(file){
+        const ref = storage.ref('images/' + Date.now() + '-' + file.name);
+        ref.put(file).then(() => ref.getDownloadURL()).then(url => {
+          messagesRef.push({
+            name: currentUser.name,
+            gender: currentUser.gender,
+            image: url,
+            timestamp: Date.now()
+          });
+        });
       }
     };
 
-    // تحميل الرسائل في الوقت الحقيقي
-    function loadMessages() {
+    voiceBtn.onclick = async () => {
+      if(mediaRecorder && mediaRecorder.state === "recording"){
+        mediaRecorder.stop();
+        voiceBtn.textContent = '🎤';
+      } else {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(audioChunks, { type: 'audio/webm' });
+          const file = new File([blob], Date.now()+'.webm');
+          const ref = storage.ref('voices/' + file.name);
+          ref.put(file).then(() => ref.getDownloadURL()).then(url => {
+            messagesRef.push({
+              name: currentUser.name,
+              gender: currentUser.gender,
+              voice: url,
+              timestamp: Date.now()
+            });
+          });
+        };
+        mediaRecorder.start();
+        voiceBtn.textContent = '⏹️';
+      }
+    };
+
+    function loadMessages(){
       messagesRef.off();
-      messagesRef.on('value', (snapshot) => {
-        const data = snapshot.val() || {};
-        const msgs = Object.entries(data).map(([id, msg]) => ({ id, ...msg }));
-        msgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+      messagesRef.on('value', snap => {
+        const data = snap.val() || {};
+        const msgs = Object.entries(data).map(([id, msg]) => ({id, ...msg}));
+        msgs.sort((a,b) => (a.timestamp||0)-(b.timestamp||0));
         renderMessages(msgs);
       });
     }
 
-    // حذف رسالة واحدة
-    function deleteMessage(id) {
-      messagesRef.child(id).remove();
-    }
-
-    // عرض الرسائل
-    function renderMessages(msgs) {
+    function renderMessages(msgs){
       messagesList.innerHTML = '';
-      if (msgs.length === 0) {
-        messagesList.innerHTML = '<div class="empty">لا توجد رسائل بعد.</div>';
-        return;
-      }
       msgs.forEach(msg => {
         const isOwn = currentUser && msg.name === currentUser.name;
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${msg.gender} ${isOwn ? 'own' : ''}`;
-        msgDiv.innerHTML = `
-          <div class="msg-header">
-            <span class="msg-name">${msg.name}</span>
-            <span class="msg-gender ${msg.gender}">${msg.gender === 'male' ? '👦' : '👧'}</span>
-            ${isOwn ? `<button class="delete-btn" onclick="deleteMessage('${msg.id}')">حذف</button>` : ''}
-          </div>
-          <div class="msg-text">${msg.text}</div>
-        `;
-        messagesList.appendChild(msgDiv);
+        const div = document.createElement('div');
+        div.className = `message ${isOwn? 'own':''}`;
+        let content = `<div class="msg-header">${msg.name}</div>`;
+        if(msg.text) content += `<div>${msg.text}</div>`;
+        if(msg.image) content += `<div><img src="${msg.image}" style="max-width:200px; border-radius:8px;" /></div>`;
+        if(msg.voice) content += `<div><audio controls src="${msg.voice}"></audio></div>`;
+        div.innerHTML = content;
+        messagesList.appendChild(div);
       });
       messagesList.scrollTop = messagesList.scrollHeight;
     }
-    // اجعل دالة الحذف متاحة للعناصر
-    window.deleteMessage = deleteMessage;
   </script>
 </body>
-</html> 
+</html>
