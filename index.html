@@ -1,336 +1,448 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>شات</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>شات داكن - مع دعم صور وفويس ومؤشر كتابة</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      min-height: 100vh;
-      margin: 0;
-      padding: 0;
-      font-family: 'Cairo', Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    :root{
+      --bg:#0b0f12; --panel:#121416; --muted:#9aa4b2; --accent:#4dabf7; --accent-2:#6a11cb;
     }
-    .login-container, .chat-container {
-      width: 100%;
-      max-width: 480px;
-      margin: auto;
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:'Cairo',sans-serif;
+      background:linear-gradient(180deg,var(--bg),#071021);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
-    .login-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+
+    /* container */
+    .app{
+      width:100%;
+      max-width:720px;
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
-    .login-form {
-      background: #1f1f1f;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-      width: 100%;
+
+    /* Login */
+    .login-panel{
+      width:94%; max-width:420px; background:var(--panel); padding:20px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,0.6);
     }
-    .login-form h2 {
-      margin: 0 0 1rem 0;
-      color: #4dabf7;
-      text-align: center;
+    .login-panel h2{margin:0 0 12px;color:var(--accent);text-align:center}
+    .login-row{display:flex;gap:8px;margin-bottom:10px}
+    input[type="text"], textarea{flex:1;padding:10px;border-radius:10px;border:none;background:#0f1418;color:#fff}
+    .gender-select{display:flex;gap:12px;justify-content:center;color:var(--muted);margin-bottom:10px}
+    button.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;padding:10px 14px;border-radius:10px;color:#fff;cursor:pointer}
+
+    /* Chat */
+    .chat-panel{display:flex;flex-direction:column;width:100%;height:100vh;max-width:720px;background:#090b0d;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.7);overflow:hidden}
+    .chat-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:linear-gradient(90deg,#071133,#111827);}
+    .chat-header .title{font-weight:700}
+    .chat-header .right{display:flex;gap:8px;align-items:center}
+    .user-pill{background:#0b1220;padding:6px 10px;border-radius:999px;font-size:13px;color:var(--muted)}
+    .logout{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
+
+    .messages{
+      flex:1; padding:14px; overflow-y:auto; display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,#071018,#071120);
     }
-    .login-form input[type="text"] {
-      padding: 0.7rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      outline: none;
-      background: #2a2a2a;
-      color: #fff;
+    .message{max-width:78%;padding:10px;border-radius:10px;background:#0f1720;box-shadow:0 2px 10px rgba(0,0,0,0.4);}
+    .message.own{align-self:flex-end;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff}
+    .msg-meta{font-size:12px;color:var(--muted);margin-bottom:6px;display:flex;gap:8px;align-items:center}
+    .msg-text{white-space:pre-wrap;font-size:15px}
+    .msg-img{display:block;max-width:250px;border-radius:10px;margin-top:6px;cursor:pointer}
+    audio{margin-top:6px;width:100%;outline:none}
+
+    .compose{
+      padding:10px;display:flex;gap:8px;align-items:center;background:#071124;border-top:1px solid rgba(255,255,255,0.02)
     }
-    .gender-select {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-    }
-    .gender-select label {
-      font-size: 1rem;
-      color: #ccc;
-      cursor: pointer;
-    }
-    .login-form button {
-      padding: 0.8rem;
-      background: #4dabf7;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .login-form button:hover {
-      background: #1a73e8;
-    }
-    .chat-container {
-      display: none;
-      flex-direction: column;
-      height: 100vh;
-      background: #1f1f1f;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-    }
-    .chat-header {
-      background: #2c2c2c;
-      color: #fff;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 1.1rem;
-    }
-    .logout-btn {
-      background: #ff4d4f;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 0.4rem 1rem;
-      cursor: pointer;
-    }
-    .messages-list {
-      flex: 1;
-      padding: 1rem;
-      overflow-y: auto;
-      background: #121212;
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-    }
-    .message {
-      background: #2a2a2a;
-      border-radius: 10px;
-      padding: 0.6rem 0.9rem;
-      color: #fff;
-      max-width: 80%;
-      word-break: break-word;
-    }
-    .message.own {
-      background: #0d6efd;
-      align-self: flex-end;
-    }
-    .msg-header {
-      font-size: 0.85rem;
-      margin-bottom: 0.2rem;
-      opacity: 0.8;
-    }
-    .send-form {
-      display: flex;
-      gap: 0.4rem;
-      padding: 0.8rem;
-      background: #2c2c2c;
-      align-items: center;
-    }
-    .send-form input[type="text"] {
-      flex: 1;
-      padding: 0.6rem;
-      border: none;
-      border-radius: 8px;
-      background: #3a3a3a;
-      color: #fff;
-      outline: none;
-    }
-    .send-form button {
-      background: #4dabf7;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 0.6rem 1rem;
-      cursor: pointer;
-    }
-    .send-form button:hover {
-      background: #1a73e8;
-    }
-    .send-form input[type="file"] {
-      display: none;
-    }
-    .icon-btn {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      font-size: 1.3rem;
-      color: #4dabf7;
+    .compose input[type="text"]{flex:1;padding:10px;border-radius:12px;border:none;background:#0b1217;color:#fff}
+    .icon-btn{background:transparent;border:none;color:var(--accent);font-size:20px;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+
+    .typing-indicator{padding:6px 12px;background:rgba(255,255,255,0.02);border-radius:10px;color:var(--muted);font-size:13px;margin:0 12px}
+
+    /* upload progress */
+    .progress{height:6px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden}
+    .progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));}
+
+    /* draft preview */
+    .draft-preview{font-size:13px;color:var(--muted);padding:6px 12px}
+
+    /* mobile tweaks */
+    @media (max-width:600px){
+      .message{max-width:88%}
+      .msg-img{max-width:70vw}
+      .chat-panel{border-radius:0;height:100vh}
     }
   </style>
-  <!-- Firebase -->
+
+  <!-- Firebase (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 </head>
 <body>
-  <div id="login" class="login-container">
-    <form class="login-form" id="loginForm">
-      <h2>تسجيل الدخول</h2>
-      <input type="text" id="nameInput" placeholder="اكتب اسمك..." required />
-      <div class="gender-select">
-        <label><input type="radio" name="gender" value="male" checked /> ذكر</label>
-        <label><input type="radio" name="gender" value="female" /> أنثى</label>
-      </div>
-      <button type="submit">دخول</button>
-    </form>
-  </div>
+  <div class="app">
 
-  <div id="chat" class="chat-container">
-    <div class="chat-header">
-      <span>غرفة الشات الجماعي</span>
-      <button class="logout-btn" id="logoutBtn">خروج</button>
+    <!-- LOGIN -->
+    <div id="loginPanel" class="login-panel">
+      <h2>تسجيل الدخول</h2>
+      <form id="loginForm">
+        <div class="login-row">
+          <input type="text" id="nameInput" placeholder="اكتب اسمك..." required />
+        </div>
+        <div class="gender-select">
+          <label><input type="radio" name="gender" value="male" checked/> ذكر</label>
+          <label><input type="radio" name="gender" value="female"/> أنثى</label>
+        </div>
+        <div style="text-align:center">
+          <button class="primary" type="submit">دخول</button>
+        </div>
+      </form>
     </div>
-    <div class="messages-list" id="messagesList"></div>
-    <form class="send-form" id="sendForm">
-      <button type="button" class="icon-btn" id="imgBtn">📷</button>
-      <input type="file" id="imgInput" accept="image/*" />
-      <button type="button" class="icon-btn" id="voiceBtn">🎤</button>
-      <input type="text" id="msgInput" placeholder="اكتب رسالتك..." autocomplete="off" />
-      <button type="submit">إرسال</button>
-    </form>
+
+    <!-- CHAT (hidden until login) -->
+    <div id="chatPanel" class="chat-panel" style="display:none">
+      <div class="chat-header">
+        <div class="title">غرفة الشات الجماعي</div>
+        <div class="right">
+          <div id="typingBadge" class="typing-indicator" style="display:none">...</div>
+          <div id="userPill" class="user-pill">-</div>
+          <button id="logoutBtn" class="logout">خروج</button>
+        </div>
+      </div>
+
+      <div id="messages" class="messages"></div>
+
+      <div id="progressWrap" style="display:none;padding:0 12px 8px">
+        <div class="small">جارٍ الرفع...</div>
+        <div class="progress"><i id="progressBar"></i></div>
+      </div>
+
+      <div id="draft" class="draft-preview" style="display:none">أنت تكتب: <span id="draftText"></span></div>
+
+      <div class="compose">
+        <button id="imgBtn" class="icon-btn" title="إرفاق صورة">📷</button>
+        <input id="imgInput" type="file" accept="image/*" style="display:none" />
+
+        <button id="voiceBtn" class="icon-btn" title="تسجيل صوت">🎤</button>
+        <input id="audioFileInput" type="file" accept="audio/*" style="display:none" />
+
+        <input id="msgInput" type="text" placeholder="اكتب رسالتك..." autocomplete="off" />
+        <button id="sendBtn" class="primary">إرسال</button>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // Firebase config الجديد
+    /***** ضع هنا بيانات Firebase التي أعطيتني إياها *****/
     const firebaseConfig = { 
       apiKey: "AIzaSyD03Kn97hVqwGmizWO3mWdh_fYaRAJ0OdQ",
       authDomain: "chat1-e8742.firebaseapp.com",
       databaseURL: "https://chat1-e8742-default-rtdb.firebaseio.com",
       projectId: "chat1-e8742",
-      storageBucket: "chat1-e8742.appspot.com",
+      storageBucket: "chat1-e8742.firebasestorage.app",
       messagingSenderId: "857146526059",
       appId: "1:857146526059:web:1a2b79c8eea8e12c6b242e"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const storage = firebase.storage();
     const messagesRef = db.ref('messages');
+    const typingRef = db.ref('typing');
 
-    const loginDiv = document.getElementById('login');
-    const chatDiv = document.getElementById('chat');
+    // عناصر
+    const loginPanel = document.getElementById('loginPanel');
+    const chatPanel = document.getElementById('chatPanel');
     const loginForm = document.getElementById('loginForm');
     const nameInput = document.getElementById('nameInput');
-    const sendForm = document.getElementById('sendForm');
-    const msgInput = document.getElementById('msgInput');
-    const messagesList = document.getElementById('messagesList');
-    const logoutBtn = document.getElementById('logoutBtn');
     const imgBtn = document.getElementById('imgBtn');
     const imgInput = document.getElementById('imgInput');
     const voiceBtn = document.getElementById('voiceBtn');
+    const audioFileInput = document.getElementById('audioFileInput');
+    const msgInput = document.getElementById('msgInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const messagesEl = document.getElementById('messages');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userPill = document.getElementById('userPill');
+    const typingBadge = document.getElementById('typingBadge');
+    const draft = document.getElementById('draft');
+    const draftText = document.getElementById('draftText');
+    const progressWrap = document.getElementById('progressWrap');
+    const progressBar = document.getElementById('progressBar');
 
     let currentUser = null;
-    let mediaRecorder;
+    let mediaRecorder = null;
     let audioChunks = [];
+    let isRecording = false;
+    let typingTimer = null;
 
+    // تسجيل الدخول
     loginForm.onsubmit = (e) => {
       e.preventDefault();
       const name = nameInput.value.trim();
       const gender = loginForm.gender.value;
-      if(name){
-        currentUser = { name, gender };
-        loginDiv.style.display = 'none';
-        chatDiv.style.display = 'flex';
-        loadMessages();
-      }
+      if(!name) return;
+      currentUser = { name, gender, id: 'u_' + Date.now() };
+      loginPanel.style.display = 'none';
+      chatPanel.style.display = 'flex';
+      userPill.textContent = currentUser.name;
+      // افحص الرسائل الحالية واستمع للتحديثات
+      loadMessages();
+      listenTyping();
+      // set presence cleanup
+      window.addEventListener('beforeunload', () => {
+        typingRef.child(currentUser.name).remove();
+      });
     };
 
+    // الخروج
     logoutBtn.onclick = () => {
-      chatDiv.style.display = 'none';
-      loginDiv.style.display = 'flex';
-      messagesList.innerHTML = '';
-      msgInput.value = '';
+      if(currentUser){
+        typingRef.child(currentUser.name).remove();
+      }
       currentUser = null;
+      chatPanel.style.display = 'none';
+      loginPanel.style.display = 'block';
+      messagesEl.innerHTML = '';
+      nameInput.value = '';
     };
 
-    sendForm.onsubmit = (e) => {
-      e.preventDefault();
+    /*** إرسال رسالة نصية عند الضغط على زر الإرسال أو Enter (بدون Shift) ***/
+    sendBtn.onclick = sendTextMessage;
+    msgInput.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' && !e.shiftKey){
+        e.preventDefault();
+        sendTextMessage();
+      }
+    });
+
+    function sendTextMessage(){
       const text = msgInput.value.trim();
-      if(text && currentUser){
-        messagesRef.push({
-          name: currentUser.name,
-          gender: currentUser.gender,
-          text,
-          timestamp: Date.now()
-        });
+      if(!text || !currentUser) return;
+      const payload = {
+        name: currentUser.name,
+        gender: currentUser.gender,
+        text,
+        timestamp: Date.now(),
+        type: 'text'
+      };
+      messagesRef.push(payload).then(() => {
         msgInput.value = '';
-      }
-    };
+        setTyping(false);
+      }).catch(err => alert('خطأ أثناء إرسال الرسالة'));
+    }
 
-    imgBtn.onclick = () => imgInput.click();
-    imgInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if(file){
-        const ref = storage.ref('images/' + Date.now() + '-' + file.name);
-        ref.put(file).then(() => ref.getDownloadURL()).then(url => {
-          messagesRef.push({
-            name: currentUser.name,
-            gender: currentUser.gender,
-            image: url,
-            timestamp: Date.now()
-          });
-        });
-      }
-    };
-
-    voiceBtn.onclick = async () => {
-      if(mediaRecorder && mediaRecorder.state === "recording"){
-        mediaRecorder.stop();
-        voiceBtn.textContent = '🎤';
-      } else {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        audioChunks = [];
-        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-        mediaRecorder.onstop = () => {
-          const blob = new Blob(audioChunks, { type: 'audio/webm' });
-          const file = new File([blob], Date.now()+'.webm');
-          const ref = storage.ref('voices/' + file.name);
-          ref.put(file).then(() => ref.getDownloadURL()).then(url => {
-            messagesRef.push({
-              name: currentUser.name,
-              gender: currentUser.gender,
-              voice: url,
-              timestamp: Date.now()
-            });
-          });
-        };
-        mediaRecorder.start();
-        voiceBtn.textContent = '⏹️';
-      }
-    };
-
+    /***** تحميل الرسائل في الوقت الحقيقي *****/
     function loadMessages(){
       messagesRef.off();
       messagesRef.on('value', snap => {
         const data = snap.val() || {};
-        const msgs = Object.entries(data).map(([id, msg]) => ({id, ...msg}));
-        msgs.sort((a,b) => (a.timestamp||0)-(b.timestamp||0));
-        renderMessages(msgs);
+        const list = Object.entries(data).map(([id, msg]) => ({ id, ...msg }));
+        list.sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
+        renderMessages(list);
       });
     }
 
-    function renderMessages(msgs){
-      messagesList.innerHTML = '';
-      msgs.forEach(msg => {
-        const isOwn = currentUser && msg.name === currentUser.name;
+    function renderMessages(list){
+      // احفظ موضع ال scroll لمعرفة إذا كنّا قريبين من الأسفل
+      const mustScroll = (messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight) < 120;
+      messagesEl.innerHTML = '';
+      list.forEach(msg => {
         const div = document.createElement('div');
-        div.className = `message ${isOwn? 'own':''}`;
-        let content = `<div class="msg-header">${msg.name}</div>`;
-        if(msg.text) content += `<div>${msg.text}</div>`;
-        if(msg.image) content += `<div><img src="${msg.image}" style="max-width:200px; border-radius:8px;" /></div>`;
-        if(msg.voice) content += `<div><audio controls src="${msg.voice}"></audio></div>`;
-        div.innerHTML = content;
-        messagesList.appendChild(div);
+        div.className = 'message' + (currentUser && msg.name === currentUser.name ? ' own' : '');
+        const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString('ar-EG', {hour:'2-digit',minute:'2-digit'}) : '';
+        const meta = `<div class="msg-meta"><strong>${escapeHtml(msg.name)}</strong><span>•</span><span class="small">${time}</span></div>`;
+        let body = '';
+        if(msg.text) body += `<div class="msg-text">${escapeHtml(msg.text)}</div>`;
+        if(msg.image) body += `<img class="msg-img" src="${msg.image}" loading="lazy" onclick="window.open('${msg.image}','_blank')"/>`;
+        if(msg.voice) body += `<audio controls src="${msg.voice}"></audio>`;
+        div.innerHTML = meta + body;
+        messagesEl.appendChild(div);
       });
-      messagesList.scrollTop = messagesList.scrollHeight;
+      if(mustScroll) messagesEl.scrollTop = messagesEl.scrollHeight;
     }
+
+    // حماية من XSS صغيرة
+    function escapeHtml(text){
+      return String(text).replace(/[&<>\"']/g, function(s){
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[s];
+      });
+    }
+
+    /*** رفع صور ***/
+    imgBtn.onclick = () => imgInput.click();
+    imgInput.onchange = (e) => {
+      const file = e.target.files && e.target.files[0];
+      if(!file){ return; }
+      if(!currentUser){ alert('يجب تسجيل الدخول أولاً'); return; }
+      uploadFile(file, 'images', (url) => {
+        messagesRef.push({ name: currentUser.name, gender: currentUser.gender, image: url, timestamp: Date.now(), type: 'image' });
+      });
+      // reset
+      imgInput.value = '';
+    };
+
+    /*** رفع ملف صوتي (fallback للمتصفحات غير الداعمة للتسجيل المباشر) ***/
+    audioFileInput.onchange = (e) => {
+      const file = e.target.files && e.target.files[0];
+      if(!file || !currentUser) return;
+      uploadFile(file, 'voices', (url) => {
+        messagesRef.push({ name: currentUser.name, gender: currentUser.gender, voice: url, timestamp: Date.now(), type: 'voice' });
+      });
+      audioFileInput.value = '';
+    };
+
+    /*** دالة رفع عامة مع progress ***/
+    function uploadFile(file, folder, cb){
+      progressWrap.style.display = 'block';
+      progressBar.style.width = '0%';
+      const path = `${folder}/${Date.now()}_${sanitizeFilename(file.name)}`;
+      const ref = storage.ref().child(path);
+      const uploadTask = ref.put(file);
+      uploadTask.on('state_changed', (snapshot) => {
+        const p = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        progressBar.style.width = p + '%';
+      }, (err) => {
+        progressWrap.style.display = 'none';
+        alert('فشل الرفع: ' + err.message);
+      }, () => {
+        ref.getDownloadURL().then(url => {
+          progressWrap.style.display = 'none';
+          progressBar.style.width = '0%';
+          cb(url);
+        }).catch(err => {
+          progressWrap.style.display = 'none';
+          alert('خطأ أثناء الحصول على رابط الملف');
+        });
+      });
+    }
+    function sanitizeFilename(name){ return name.replace(/[^a-zA-Z0-9._-؀-ۿ ]/g,'_'); }
+
+    /***** تسجيل صوتي باستخدام MediaRecorder مع fallback *****/
+    voiceBtn.onclick = async () => {
+      if(!currentUser){ alert('سجّل دخول أولاً'); return; }
+
+      // إذا كان المتصفح لا يدعم MediaRecorder فافتح رفع ملف صوتي
+      if(!navigator.mediaDevices || typeof MediaRecorder === 'undefined'){
+        alert('تسجيل الصوت غير مدعوم في متصفحك. يمكنك رفع ملف صوتي مسجل مسبقاً.');
+        audioFileInput.click();
+        return;
+      }
+
+      if(isRecording){
+        // stop
+        mediaRecorder.stop();
+        isRecording = false;
+        voiceBtn.textContent = '🎤';
+        voiceBtn.title = 'تسجيل صوت';
+        return;
+      }
+
+      try{
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // حاول اختيار نوع مناسب
+        let mimeType = '';
+        if(MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mimeType = 'audio/webm;codecs=opus';
+        else if(MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) mimeType = 'audio/ogg;codecs=opus';
+        else if(MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
+
+        mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+        audioChunks = [];
+        mediaRecorder.ondataavailable = (ev) => { if(ev.data && ev.data.size > 0) audioChunks.push(ev.data); };
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+          const ext = (mediaRecorder.mimeType || '').includes('ogg') ? 'ogg' : (mediaRecorder.mimeType || '').includes('mp4') ? 'mp4' : 'webm';
+          const file = new File([blob], `voice_${Date.now()}.${ext}`, { type: blob.type });
+          uploadFile(file, 'voices', (url) => {
+            messagesRef.push({ name: currentUser.name, gender: currentUser.gender, voice: url, timestamp: Date.now(), type: 'voice' });
+          });
+        };
+        mediaRecorder.start();
+        isRecording = true;
+        voiceBtn.textContent = '⏹️';
+        voiceBtn.title = 'إيقاف التسجيل';
+      } catch(err){
+        console.error(err);
+        alert('لم يتم السماح بالوصول إلى المايكروفون أو حدث خطأ');
+      }
+    };
+
+    /***** مؤشر الكتابة (typing indicator) *****/
+    msgInput.addEventListener('input', () => {
+      const text = msgInput.value;
+      if(text && text.trim().length>0){
+        setTyping(true);
+        draft.style.display = 'block';
+        draftText.textContent = text;
+      } else {
+        setTyping(false);
+        draft.style.display = 'none';
+      }
+    });
+
+    msgInput.addEventListener('focus', () => {
+      // scroll to bottom so user sees input
+      setTimeout(()=> messagesEl.scrollTop = messagesEl.scrollHeight, 120);
+    });
+
+    function setTyping(isTyping){
+      if(!currentUser) return;
+      const node = typingRef.child(currentUser.name);
+      if(isTyping){
+        node.set({ typing:true, last: Date.now() });
+        if(typingTimer) clearTimeout(typingTimer);
+        typingTimer = setTimeout(()=> node.remove(), 2500);
+      } else {
+        node.remove();
+        if(typingTimer){ clearTimeout(typingTimer); typingTimer = null; }
+      }
+    }
+
+    function listenTyping(){
+      typingRef.on('value', snap => {
+        const data = snap.val() || {};
+        const now = Date.now();
+        const names = [];
+        Object.entries(data).forEach(([k,v]) => {
+          if(!v) return;
+          // افحص العمر
+          const last = v.last || 0;
+          if(now - last < 4000 && k !== (currentUser && currentUser.name)) names.push(k);
+        });
+        if(names.length === 0){ typingBadge.style.display = 'none'; }
+        else { typingBadge.style.display = 'block'; typingBadge.textContent = names.join(', ') + ' يكتب...'; }
+      });
+    }
+
+    /***** مساعدة: اختبار قواعد Firebase *****/
+    // ملاحظة: لو الصور أو الصوت مش بيوصلوا بعد رفعهم — افحص قواعد Storage في Firebase Console.
+    // للاختبار السريع (غير آمن للإنتاج) يمكنك اختبار القواعد التالية مؤقتاً في Firebase Storage:
+    // rules_version = '2';
+    // service firebase.storage {
+    //   match /b/{bucket}/o {
+    //     match /{allPaths=**} {
+    //       allow read, write: if true;
+    //     }
+    //   }
+    // }
+
+    /***** مساعدة عامة *****/
+    function sanitizeFilename(name){ return name.replace(/[^a-zA-Z0-9._-؀-ۿ ]/g,'_'); }
+
+    // Expose uploadFile for debugging from console
+    window._uploadFile = uploadFile;
+
   </script>
 </body>
 </html>
