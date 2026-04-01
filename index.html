@@ -3,123 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WhatsApp Pro - GitHub Edition</title>
+    <title>WhatsApp Pro - Fixed Identity</title>
     <style>
-        /* حل مشكلة الطول في المتصفحات */
         :root { --vh: 1vh; }
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #efeae2;
-            height: 100vh; /* fallback */
+            background-color: #0b141a; 
             height: calc(var(--vh, 1vh) * 100);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            display: flex; flex-direction: column; overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e9edef;
         }
 
         /* الهيدر */
         .header { 
-            background: #f0f2f5; 
+            background: #202c33; 
             padding: 10px 16px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            border-bottom: 1px solid #d1d7db;
-            z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid #2f3b44;
+            z-index: 10;
         }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 40px; height: 40px; background: #00a884; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
-        .title { font-weight: 500; font-size: 16px; color: #111b21; }
-        .online { font-size: 12px; color: #667781; }
+        .avatar { width: 40px; height: 40px; background: #00a884; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 
-        /* منطقة الدردشة */
+        /* منطقة الشات */
         .chat-container { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 15px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 4px;
+            flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 4px;
             background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-            background-blend-mode: overlay;
-            background-color: #efeae2;
+            background-blend-mode: multiply; background-color: #0b141a;
         }
 
-        /* الفقاعات الاحترافية */
+        /* نظام الفقاعات الذكي */
         .bubble { 
-            max-width: 85%; 
-            padding: 6px 10px 8px; 
-            font-size: 14.5px; 
-            border-radius: 8px; 
-            position: relative; 
-            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
-            line-height: 1.4;
+            max-width: 85%; padding: 8px 12px; font-size: 15px; border-radius: 8px; 
+            line-height: 1.4; position: relative; box-shadow: 0 1px 0.5px rgba(0,0,0,0.15);
             word-wrap: break-word;
         }
-        .bubble-out { background-color: #d9fdd3; align-self: flex-end; border-top-left-radius: 8px; }
-        .bubble-in { background-color: #ffffff; align-self: flex-start; border-top-right-radius: 8px; }
-        
-        .time { font-size: 10px; color: #667781; margin-top: 2px; text-align: left; opacity: 0.8; }
 
-        /* بوكس الرسائل - تم تثبيته وحل مشكلة الاختفاء */
+        /* رسائلي أنا (تظهر دائماً على اليمين باللون الأخضر) */
+        .my-message { 
+            background-color: #005c4b; 
+            align-self: flex-start; /* لأن الاتجاه RTL فاليمين هو البداية */
+            border-top-right-radius: 0;
+            color: #e9edef;
+        }
+
+        /* رسائل الآخرين (تظهر دائماً على اليسار باللون الرمادي) */
+        .other-message { 
+            background-color: #202c33; 
+            align-self: flex-end; 
+            border-top-left-radius: 0;
+            color: #e9edef;
+        }
+        
+        .time { font-size: 11px; color: #8696a0; margin-top: 4px; text-align: left; }
+
+        /* منطقة الإدخال */
         .input-area { 
-            background: #f0f2f5; 
-            padding: 8px 12px; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            border-top: 1px solid #d1d7db;
-            padding-bottom: max(8px, env(safe-area-inset-bottom)); /* دعم آيفون */
+            background: #202c33; padding: 10px; display: flex; align-items: center; gap: 10px;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
         }
         .input-box { 
-            flex: 1; 
-            background: white; 
-            border-radius: 20px; 
-            padding: 9px 15px; 
-            border: 1px solid #fff; 
-            outline: none; 
-            font-size: 15px;
-            color: #3b4a54;
+            flex: 1; background: #2a3942; border-radius: 24px; padding: 12px 16px; 
+            border: none; outline: none; font-size: 16px; color: #d1d7db;
         }
-        .send-btn { 
-            background: #00a884; 
-            color: white; 
-            border: none; 
-            width: 42px; 
-            height: 42px; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        
-        .clear-btn { background: #ea0038; color: white; border: none; padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+        .send-btn { background: #00a884; color: white; border: none; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        .clear-btn { background: #ea0038; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="user-info">
+        <div style="display:flex; align-items:center; gap:12px;">
             <div class="avatar">CR</div>
-            <div
-                <div class="title"> انا وي دودو 👀🙈</div>
-                <div class="online">متصل الآن</div>
+            <div>
+                <div style="font-weight: 600;">قلبيييي </div>
+                <div style="font-size: 12px; color: #00a884;">متصل الآن</div>
             </div>
         </div>
-        <button id="clear-all-btn" class="clear-btn">مسح الكل</button>
+        <button id="clear-btn" class="clear-btn">حذف الكل</button>
     </div>
 
     <div id="chat-container" class="chat-container"></div>
 
     <div class="input-area">
-        <input id="message-input" type="text" class="input-box" placeholder="اكتب رسالة" autocomplete="off">
+        <input id="message-input" type="text" class="input-box" placeholder="اكتب رسالة..." autocomplete="off">
         <button id="send-btn" class="send-btn">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
     </div>
 
@@ -127,14 +97,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, push, set, onChildAdded, onChildRemoved, remove, serverTimestamp } 
         from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-        // حل مشكلة الطول في الموبايل برمجياً
-        const setVh = () => {
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        };
-        window.addEventListener('resize', setVh);
-        setVh();
 
         const firebaseConfig = {
             apiKey: "AIzaSyD03Kn97hVqwGmizWO3mWdh_fYaRAJ0OdQ",
@@ -149,7 +111,13 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const messagesRef = ref(db, 'messages');
-        const myUserId = "user_" + Math.floor(Math.random() * 9999);
+
+        // --- الجزء الأهم: تثبيت الهوية ---
+        let myUserId = localStorage.getItem('chat_user_id');
+        if (!myUserId) {
+            myUserId = "user_" + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('chat_user_id', myUserId);
+        }
 
         const chatContainer = document.getElementById('chat-container');
         const messageInput = document.getElementById('message-input');
@@ -157,9 +125,13 @@
 
         async function sendMessage() {
             const text = messageInput.value.trim();
-            if (text !== "") {
+            if (text) {
                 const newMessageRef = push(messagesRef);
-                await set(newMessageRef, { userId: myUserId, text: text, timestamp: serverTimestamp() });
+                await set(newMessageRef, { 
+                    userId: myUserId, 
+                    text: text, 
+                    timestamp: serverTimestamp() 
+                });
                 messageInput.value = "";
                 messageInput.focus();
             }
@@ -167,28 +139,34 @@
 
         sendBtn.onclick = sendMessage;
         messageInput.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
-        document.getElementById('clear-all-btn').onclick = () => { if(confirm("حذف كل الرسائل؟")) remove(messagesRef); };
+        document.getElementById('clear-btn').onclick = () => { if(confirm("هل تريد مسح الشات بالكامل؟")) remove(messagesRef); };
 
         onChildAdded(messagesRef, (snapshot) => {
             const data = snapshot.val();
-            const id = snapshot.key;
-            const isMe = data.userId === myUserId;
+            const isMe = data.userId === myUserId; // مقارنة الهوية المحفوظة
             const time = data.timestamp ? new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
             
             const msgDiv = document.createElement('div');
-            msgDiv.id = `msg-${id}`;
-            msgDiv.className = `bubble ${isMe ? 'bubble-out' : 'bubble-in'}`;
+            msgDiv.id = `msg-${snapshot.key}`;
+            
+            // تطبيق كلاس "رسالتي" أو "رسالة غيري"
+            msgDiv.className = `bubble ${isMe ? 'my-message' : 'other-message'}`;
             msgDiv.innerHTML = `<div>${data.text}</div><div class="time">${time}</div>`;
             
-            msgDiv.onclick = () => { if(confirm("حذف الرسالة؟")) remove(ref(db, `messages/${id}`)); };
+            msgDiv.onclick = () => { if(confirm("حذف هذه الرسالة؟")) remove(ref(db, `messages/${snapshot.key}`)); };
             
             chatContainer.appendChild(msgDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         });
 
-        onChildRemoved(messagesRef, (snapshot) => {
-            document.getElementById(`msg-${snapshot.key}`)?.remove();
+        onChildRemoved(messagesRef, (snapshot) => { 
+            const el = document.getElementById(`msg-${snapshot.key}`);
+            if(el) el.remove(); 
         });
+
+        // تصحيح أبعاد الشاشة للموبايل
+        const setVh = () => { document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`); };
+        window.addEventListener('resize', setVh); setVh();
     </script>
 </body>
 </html>
