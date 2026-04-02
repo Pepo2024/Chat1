@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WhatsApp Pro Max - Ultimate</title>
+    <title>WhatsApp Pro Max - Vibrate Edition</title>
     <style>
         :root {
             --vh: 1vh;
@@ -15,73 +15,79 @@
             --text: #111b21; --sec: #667781; --border: #d1d7db;
         }
 
-        * { 
-            box-sizing: border-box; margin: 0; padding: 0; 
-            -webkit-tap-highlight-color: transparent;
+        /* الأساسيات ومنع التحديد المزعج */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        /* قفل التحديد عن العناصر الثابتة فقط */
+        .header, .menu-wrapper, .send-btn, .bubble, #reply-bar, .dropdown-content, #context-popup {
             user-select: none; -webkit-user-select: none;
+        }
+
+        /* مربع النص: حُر تماماً عشان المسح والتعديل يشتغلوا 100% */
+        .input-box { 
+            flex: 1; background: var(--bg); border-radius: 24px; padding: 12px 16px; 
+            border: none; outline: none; color: var(--text); font-size: 16px;
+            user-select: text !important; -webkit-user-select: text !important;
+            -webkit-touch-callout: default !important;
         }
 
         body { background-color: var(--bg); height: calc(var(--vh, 1vh) * 100); display: flex; flex-direction: column; overflow: hidden; font-family: sans-serif; color: var(--text); transition: 0.3s; }
 
-        /* Header */
+        /* الهيدر والقوائم */
         .header { background: var(--header); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); z-index: 1000; }
-        .menu-wrapper { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; position: relative; }
-        .menu-wrapper:active { background: rgba(255,255,255,0.1); }
-        
+        .menu-wrapper { position: relative; cursor: pointer; padding: 5px; }
         .dropdown-content { 
-            display: none; position: absolute; left: 10px; top: 55px; 
+            display: none; position: absolute; left: 0; top: 40px; 
             background: var(--header); border: 1px solid var(--border); 
-            border-radius: 8px; width: 180px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 2000; 
+            border-radius: 8px; width: 170px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 2000; 
         }
-        .dropdown-content div { padding: 14px 16px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; text-align: right; }
-        .dropdown-content div:last-child { border: none; color: #ff4b4b; }
+        .dropdown-content div { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; text-align: right; }
 
-        /* Chat */
+        /* منطقة الشات */
         .chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: multiply; background-color: var(--bg); }
-        body.light-mode .chat-container { background-blend-mode: overlay; }
 
-        /* Bubbles */
         .bubble { 
             max-width: 85%; padding: 8px 12px; font-size: 15px; border-radius: 10px; position: relative; 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: transform 0.2s ease, opacity 0.2s;
-            will-change: transform;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: transform 0.1s ease;
+            word-wrap: break-word; line-height: 1.4;
         }
         .my-msg { background: var(--bubble-out); align-self: flex-start; border-top-right-radius: 0; }
         .other-msg { background: var(--bubble-in); align-self: flex-end; border-top-left-radius: 0; }
         
-        .reply-box-in-msg { background: rgba(0,0,0,0.15); border-right: 4px solid #00a884; padding: 5px; border-radius: 4px; margin-bottom: 5px; font-size: 13px; color: var(--sec); }
+        /* القائمة المنبثقة */
+        #context-popup { 
+            display: none; position: fixed; background: var(--header); 
+            border: 1px solid var(--border); border-radius: 12px; width: 140px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7); z-index: 3000;
+        }
+        #context-popup div { padding: 12px; cursor: pointer; font-size: 14px; text-align: center; border-bottom: 1px solid var(--border); }
 
-        /* Animations */
-        @keyframes shake { 0%, 100% {transform:translateX(0)} 25% {transform:translateX(-3px)} 75% {transform:translateX(3px)} }
-        .is-shaking { animation: shake 0.1s infinite; }
-        .deleting { transform: scale(0); opacity: 0; }
-
-        /* Context Menu */
-        #context-popup { display: none; position: fixed; background: var(--header); border: 1px solid var(--border); border-radius: 12px; width: 150px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 3000; }
-        #context-popup div { padding: 14px; cursor: pointer; font-size: 14px; }
-
-        /* Reply Bar */
+        /* الرد */
         #reply-bar { display: none; background: var(--header); padding: 8px 16px; border-top: 1px solid var(--border); border-right: 5px solid #00a884; }
 
-        /* Input Area */
-        .input-area { background: var(--header); padding: 10px; display: flex; align-items: center; gap: 8px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
-        .input-box { flex: 1; background: var(--bg); border-radius: 24px; padding: 12px 16px; border: none; outline: none; color: var(--text); font-size: 16px; user-select: text !important; -webkit-user-select: text !important; }
-        .send-btn { background: #00a884; color: white; border: none; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
+        /* منطقة الإدخال */
+        .input-area { background: var(--header); padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .send-btn { background: #00a884; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        /* تأثيرات */
+        .deleting { transform: scale(0); opacity: 0; transition: 0.3s; }
+        .is-shaking { animation: shake 0.1s infinite; }
+        @keyframes shake { 0%, 100% {transform:translateX(0)} 25% {transform:translateX(-2px)} 75% {transform:translateX(2px)} }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div style="display:flex; align-items:center; gap:12px;">
-            <div style="width:40px; height:40px; background:#00a884; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white;">D</div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:35px; height:35px; background:#00a884; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white;">D</div>
             <div><b>دردشة دودو</b><br><small style="color:#00a884">متصل الآن</small></div>
         </div>
-        <div class="menu-wrapper" id="menu-trigger">
+        <div class="menu-wrapper" onclick="toggleMenu(event)">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 7a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100 4 2 2 0 000-4zm0 6a2 2 0 100 4 2 2 0 000-4z"/></svg>
             <div class="dropdown-content" id="drop-box">
-                <div onclick="toggleMode()">تبديل الوضع (ليلي/نهاري)</div>
-                <div onclick="enableNotifications()">تفعيل التنبيهات</div>
-                <div onclick="clearAllChat()">حذف جميع الرسائل</div>
+                <div onclick="toggleDarkMode()">تبديل الوضع</div>
+                <div onclick="askNotif()">تفعيل التنبيهات</div>
+                <div onclick="clearAllChat()" style="color:#ff4b4b; border:none;">حذف الشات للكل</div>
             </div>
         </div>
     </div>
@@ -90,24 +96,21 @@
 
     <div id="context-popup">
         <div id="copy-btn">نسخ النص</div>
-        <div id="del-btn" style="color:#ff4b4b;">حذف للجميع</div>
+        <div id="del-btn" style="color:#ff4b4b; border:none;">حذف للجميع</div>
     </div>
 
     <div id="reply-bar">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="color:#00a884; font-size:12px; font-weight:bold;">رد على الرسالة</span>
-            <span onclick="closeReply()" style="cursor:pointer; padding:5px;">✕</span>
+            <span onclick="closeReply()" style="cursor:pointer;">✕</span>
         </div>
-        <p id="reply-label" style="font-size:13px; color:var(--sec); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></p>
+        <p id="reply-label" style="font-size:13px; color:var(--sec); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></p>
     </div>
 
     <div class="input-area">
-        <input id="msg-input" type="text" class="input-box" placeholder="مراسلة" autocomplete="off">
+        <input id="msg-input" type="text" class="input-box" placeholder="مراسلة" autocomplete="off" spellcheck="false">
         <button id="send-btn" class="send-btn">➤</button>
     </div>
-
-    <audio id="snd-delete" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
-    <audio id="snd-notif" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -115,12 +118,8 @@
 
         const firebaseConfig = {
             apiKey: "AIzaSyD03Kn97hVqwGmizWO3mWdh_fYaRAJ0OdQ",
-            authDomain: "chat1-e8742.firebaseapp.com",
             databaseURL: "https://chat1-e8742-default-rtdb.firebaseio.com",
             projectId: "chat1-e8742",
-            storageBucket: "chat1-e8742.firebasestorage.app",
-            messagingSenderId: "857146526059",
-            appId: "1:857146526059:web:1a2b79c8eea8e12c6b242e"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -129,130 +128,101 @@
         const myUID = localStorage.getItem('chat_uid') || ("u" + Date.now());
         localStorage.setItem('chat_uid', myUID);
 
+        const inputField = document.getElementById('msg-input');
+        const chatBox = document.getElementById('chat-box');
+        const contextPopup = document.getElementById('context-popup');
         let activeMsg = null;
         let replyMsgText = null;
 
-        const chatBox = document.getElementById('chat-box');
-        const dropBox = document.getElementById('drop-box');
-        const contextPopup = document.getElementById('context-popup');
+        // دالة الاهتزاز
+        const vibrate = (ms) => { if (navigator.vibrate) navigator.vibrate(ms); };
 
-        // القائمة العلوية
-        document.getElementById('menu-trigger').onclick = (e) => {
-            e.stopPropagation();
-            dropBox.style.display = dropBox.style.display === 'block' ? 'none' : 'block';
-        };
-
-        window.onclick = () => { dropBox.style.display = 'none'; contextPopup.style.display = 'none'; };
-
-        window.toggleMode = () => document.body.classList.toggle('light-mode');
+        window.toggleMenu = (e) => { e.stopPropagation(); const box = document.getElementById('drop-box'); box.style.display = box.style.display === 'block' ? 'none' : 'block'; };
+        window.toggleDarkMode = () => document.body.classList.toggle('light-mode');
+        window.askNotif = () => Notification.requestPermission();
+        window.clearAllChat = () => confirm("مسح الكل؟") && remove(chatRef);
+        window.closeReply = () => { replyMsgText = null; document.getElementById('reply-bar').style.display = 'none'; };
         
-        window.enableNotifications = () => {
-            Notification.requestPermission().then(perm => {
-                if(perm === 'granted') alert("التنبيهات شغالة!");
-                else alert("تم رفض التنبيهات");
-            });
-        };
+        window.addEventListener('click', () => {
+            document.getElementById('drop-box').style.display = 'none';
+            contextPopup.style.display = 'none';
+        });
 
-        window.clearAllChat = () => {
-            if(confirm("هل أنت متأكد من مسح الشات للكل؟")) remove(chatRef);
-        };
-
-        window.closeReply = () => {
-            replyMsgText = null;
-            document.getElementById('reply-bar').style.display = 'none';
-        };
-
-        // الإرسال
         async function send() {
-            const val = document.getElementById('msg-input').value.trim();
+            const val = inputField.value.trim();
             if (val) {
                 const data = { uid: myUID, text: val, time: serverTimestamp() };
                 if (replyMsgText) data.reply = replyMsgText;
+                inputField.value = ""; 
                 await set(push(chatRef), data);
-                document.getElementById('msg-input').value = "";
                 closeReply();
             }
         }
         document.getElementById('send-btn').onclick = send;
-        document.getElementById('msg-input').onkeydown = (e) => e.key === 'Enter' && send();
-
-        // النسخ والحذف
-        document.getElementById('copy-btn').onclick = () => {
-            navigator.clipboard.writeText(activeMsg.text);
-            alert("تم النسخ");
-        };
-        document.getElementById('del-btn').onclick = () => {
-            document.getElementById(`msg-${activeMsg.id}`).classList.add('deleting');
-            document.getElementById('snd-delete').play();
-            setTimeout(() => remove(ref(db, `messages/${activeMsg.id}`)), 250);
-        };
+        inputField.onkeydown = (e) => { if(e.key === 'Enter') send(); };
 
         onChildAdded(chatRef, (snap) => {
-            const d = snap.val();
-            const id = snap.key;
-            const isMe = d.uid === myUID;
-
+            const d = snap.val(); const id = snap.key; const isMe = d.uid === myUID;
             const bubble = document.createElement('div');
             bubble.id = `msg-${id}`;
             bubble.className = `bubble ${isMe ? 'my-msg' : 'other-msg'}`;
-            
-            let content = "";
-            if(d.reply) content += `<div class="reply-box-in-msg">${d.reply}</div>`;
-            content += `<div>${d.text}</div>`;
-            bubble.innerHTML = content;
+            bubble.innerHTML = (d.reply ? `<div style="background:rgba(0,0,0,0.1); padding:4px; border-radius:4px; font-size:12px; border-right:3px solid #00a884; margin-bottom:4px;">${d.reply}</div>` : "") + `<div>${d.text}</div>`;
 
-            // الضغط المطول
+            // الضغطة المطولة مع الاهتزاز
             let timer;
             const startPress = (e) => {
                 timer = setTimeout(() => {
+                    vibrate(60); // هزة خفيفة عند ظهور القائمة
                     bubble.classList.add('is-shaking');
                     activeMsg = { id, text: d.text };
-                    const p = e.touches ? e.touches[0] : e;
+                    const rect = bubble.getBoundingClientRect();
                     setTimeout(() => {
                         bubble.classList.remove('is-shaking');
                         contextPopup.style.display = 'block';
-                        contextPopup.style.top = p.clientY + "px";
-                        contextPopup.style.left = p.clientX + "px";
-                    }, 300);
+                        contextPopup.style.top = (rect.top - 50) + "px";
+                        let leftPos = isMe ? rect.left : rect.right - 140;
+                        contextPopup.style.left = Math.max(10, Math.min(window.innerWidth - 150, leftPos)) + "px";
+                    }, 200);
                 }, 600);
             };
-            bubble.ontouchstart = bubble.onmousedown = startPress;
-            bubble.ontouchend = bubble.onmouseup = () => clearTimeout(timer);
 
             // السحب للرد (Swipe)
             let startX = 0;
-            bubble.addEventListener('touchstart', (e) => startX = e.touches[0].clientX);
+            bubble.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; startPress(e); }, {passive: true});
             bubble.addEventListener('touchmove', (e) => {
                 let diff = e.touches[0].clientX - startX;
-                if(diff > 0 && diff < 80) bubble.style.transform = `translateX(${diff}px)`;
-            });
+                if((isMe && diff < 0 && diff > -70) || (!isMe && diff > 0 && diff < 70)) {
+                    bubble.style.transform = `translateX(${diff}px)`;
+                }
+            }, {passive: true});
+            
             bubble.addEventListener('touchend', (e) => {
+                clearTimeout(timer);
                 let diff = e.changedTouches[0].clientX - startX;
-                if(diff > 50) {
+                if((isMe && diff < -50) || (!isMe && diff > 50)) {
+                    vibrate(40); // هزة خفيفة عند تفعيل الرد بالسحب
                     replyMsgText = d.text;
                     document.getElementById('reply-label').innerText = d.text;
                     document.getElementById('reply-bar').style.display = 'block';
+                    inputField.focus();
                 }
                 bubble.style.transform = 'translateX(0)';
             });
 
             chatBox.appendChild(bubble);
             chatBox.scrollTop = chatBox.scrollHeight;
-
-            if(!isMe) {
-                document.getElementById('snd-notif').play().catch(()=>{});
-                if(document.hidden && Notification.permission === 'granted') {
-                    new Notification("رسالة جديدة", { body: d.text });
-                }
-            }
         });
+
+        document.getElementById('copy-btn').onclick = () => { navigator.clipboard.writeText(activeMsg.text); };
+        
+        document.getElementById('del-btn').onclick = () => {
+            vibrate([50, 30, 50]); // نمط اهتزاز عند الحذف
+            remove(ref(db, `messages/${activeMsg.id}`));
+        };
 
         onChildRemoved(chatRef, (snap) => {
             const el = document.getElementById(`msg-${snap.key}`);
-            if(el) {
-                el.classList.add('deleting');
-                setTimeout(() => el.remove(), 250);
-            }
+            if(el) { el.classList.add('deleting'); setTimeout(() => el.remove(), 250); }
         });
 
         const vh = () => document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
